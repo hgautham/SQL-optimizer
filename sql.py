@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from pyparsing import Literal, CaselessLiteral, Word, Upcase, delimitedList, Optional, \
     Combine, Group, alphas, nums, alphanums, ParseException, Forward, oneOf, quotedString, \
     ZeroOrMore, restOfLine, Keyword
@@ -13,6 +14,7 @@ def test( str ):
         print "tokens.nestedcolumns =", tokens.nestedcolumns
         print "tokens.nestedtables =",  tokens.nestedtables
         print "tokens.nestedwhere =", tokens.nestedwhere
+        print u'π', tokens.columns, "Select" , tokens.where , "(" , tokens.tables , ")"
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
