@@ -10,7 +10,6 @@ def test( str ):
         print "tokens.columns =", tokens.columns
         print "tokens.tables =",  tokens.tables
         print "tokens.where =", tokens.where
-        print "tokens.tableAlias =", tokens.tablealias
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
@@ -27,8 +26,7 @@ ident          = Word( alphas, alphanums + "_$" ).setName("identifier")
 columnName     = Upcase( delimitedList( ident, ".", combine=True ) )
 columnNameList = Group( delimitedList( columnName ) )
 tableName      = Upcase( delimitedList( ident, ".", combine=True ) )
-tableName2      = Upcase( delimitedList( ident, ".", combine=True ) )
-tableAlias  = tableName + astoken + tableName2.setName( "tablealias" )
+tableAlias  = tableName + astoken + tableName
 tableNameList  = Group( delimitedList( tableAlias | tableName ) )
 
 whereExpression = Forward()
