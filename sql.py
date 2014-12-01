@@ -23,8 +23,19 @@ def test( str ):
         print "tokens.nestedwhere =", tokens.nestedwhere
         wherevals = list()
         wherevals = tokens.where.asList()
-        tablevals = tokens.tables
-        tablevals = ' '.join(tablevals)
+        tablevals = tokens.tables.asList()
+        tablevalsloop = tokens.tables.asList()
+        print tablevals
+        aliasloop = list()
+        if len(tablevals)>1:
+            while 'AS' in tablevalsloop:
+                pos = tablevalsloop.index('AS')
+                aliasloop.append(tablevalsloop[pos+1])
+                tablevalsloop = tablevalsloop[pos+1:]
+            print aliasloop
+            if 'AS' in tablevals:
+                tablevals = aliasloop
+        tablevals = '*'.join(tablevals)
         if len(wherevals)>1:
             wherevals = flatten(wherevals)
             wherevals = ' '.join(wherevals)
