@@ -10,6 +10,9 @@ def test( str ):
         print "tokens.columns =", tokens.columns
         print "tokens.tables =",  tokens.tables
         print "tokens.where =", tokens.where
+        print "tokens.nestedcolumns =", tokens.nestedcolumns
+        print "tokens.nestedtables =",  tokens.nestedtables
+        print "tokens.nestedwhere =", tokens.nestedwhere
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
@@ -45,10 +48,14 @@ intNum = Combine( Optional(arithSign) + Word( nums ) +
             Optional( E + Optional("+") + Word(nums) ) )
 
 columnRval = realNum | intNum | quotedString | columnName # need to add support for alg expressions
-whereCondition = Group(
+whereCondition = ZeroOrMore(
     ( columnName + binop + columnRval ) |
     ( columnName + in_ + "(" + delimitedList( columnRval ) + ")" ) |
-    ( columnName + in_ + "(" + selectStmt + ")" ) |
+    ( columnName + in_ + "(" + ZeroOrMore(selectToken + 
+                   ( '*' | columnNameList ).setResultsName( "nestedcolumns" ) + 
+                   fromToken + 
+                   tableNameList.setResultsName( "nestedtables" ) + 
+                   Optional( ZeroOrMore( CaselessLiteral("where") + whereExpression ), "" ).setResultsName("nestedwhere")) + ")" ) |
     ( "(" + whereExpression + ")" )
     )
 whereExpression << whereCondition + ZeroOrMore( ( and_ | or_ ) + whereExpression ) 
@@ -58,7 +65,7 @@ selectStmt      << ( selectToken +
                    ( '*' | columnNameList ).setResultsName( "columns" ) + 
                    fromToken + 
                    tableNameList.setResultsName( "tables" ) + 
-                   Optional( Group( CaselessLiteral("where") + whereExpression ), "" ).setResultsName("where") )
+                   Optional( ZeroOrMore( CaselessLiteral("where") + whereExpression ), "" ).setResultsName("where") )
 
 simpleSQL = selectStmt
 
@@ -83,3 +90,4 @@ test( "Select A,b from table1,table2 where table1.id = table2.id -- test out com
 test("Select S.sname from Sailors AS S,Reserves AS R where S.sid=R.sid and R.bid=103")
 test("SELECT S.sname FROM Sailors AS S, Reserves AS R, Boats AS B WHERE S.sid=R.sid AND R.bid=B.bid AND B.color='red'")
 test("Select S.sname from Sailors AS S, Reserves AS R Where R.sid = S.sid and R.bid = 100 and S.rating > 5 and R.day = '8/9/09'")
+test("SELECT S.sname FROM Sailors AS S WHERE S.sid IN ( SELECT R.sid FROM Reserve AS R WHERE R.bid = 103)")
