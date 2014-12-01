@@ -23,11 +23,13 @@ def test( str ):
         print "tokens.nestedwhere =", tokens.nestedwhere
         wherevals = list()
         wherevals = tokens.where.asList()
+        tablevals = tokens.tables
+        tablevals = ' '.join(tablevals)
         if len(wherevals)>1:
             wherevals = flatten(wherevals)
             wherevals = ' '.join(wherevals)
             wherevals = wherevals.replace("where","")
-        print u'π', tokens.columns, "Select" , wherevals , "(" , tokens.tables , ")"
+        print u'π', tokens.columns, "Select" , wherevals , "(" , tablevals , ")"
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
