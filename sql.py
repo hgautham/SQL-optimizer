@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 from pyparsing import Literal, CaselessLiteral, Word, Upcase, delimitedList, Optional, \
     Combine, Group, alphas, nums, alphanums, ParseException, Forward, oneOf, quotedString, \
-    ZeroOrMore, restOfLine, Keyword
-
+    ZeroOrMore, restOfLine, Keyword 
+def flatten(foo):
+    for x in foo:
+        if hasattr(x, '__iter__'):
+            for y in flatten(x):
+                yield y
+        else:
+            yield x
+            
 def test( str ):
     print str,"->"
     try:
@@ -14,7 +21,12 @@ def test( str ):
         print "tokens.nestedcolumns =", tokens.nestedcolumns
         print "tokens.nestedtables =",  tokens.nestedtables
         print "tokens.nestedwhere =", tokens.nestedwhere
-        print u'π', tokens.columns, "Select" , tokens.where , "(" , tokens.tables , ")"
+        wherevals = list()
+        wherevals = tokens.where.asList()
+        if len(wherevals)>1:
+            wherevals = flatten(wherevals)
+            wherevals = ' '.join(wherevals)
+        print u'π', tokens.columns, "Select" , wherevals , "(" , tokens.tables , ")"
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
