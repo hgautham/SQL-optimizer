@@ -26,6 +26,7 @@ def test( str ):
         if len(wherevals)>1:
             wherevals = flatten(wherevals)
             wherevals = ' '.join(wherevals)
+            wherevals = wherevals.replace("where","")
         print u'π', tokens.columns, "Select" , wherevals , "(" , tokens.tables , ")"
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
