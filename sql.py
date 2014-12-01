@@ -35,6 +35,8 @@ def test( str ):
             print aliasloop
             if 'AS' in tablevals:
                 tablevals = aliasloop
+                if len(aliasloop)>2:
+                    tablevals = aliasloop[0] , aliasloop[1] , "(" + aliasloop[2] + ")" 
         tablevals = '*'.join(tablevals)
         if len(wherevals)>1:
             wherevals = flatten(wherevals)
