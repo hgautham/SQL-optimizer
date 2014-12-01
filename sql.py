@@ -40,7 +40,13 @@ def test( str ):
             wherevals = flatten(wherevals)
             wherevals = ' '.join(wherevals)
             wherevals = wherevals.replace("where","")
-        print u'π', tokens.columns, "Select" , wherevals , "(" , tablevals , ")"
+        projectvals = tokens.columns 
+        projectvals = projectvals[0] 
+        print "PROJECT", projectvals , "(" , "SELECT" , wherevals , "(" , tablevals , ")" , ")"
+        cross = conditionstmt.searchString( wherevals )
+        cross = cross.asList()
+        cross = [var for var in cross if var]
+        print cross
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
@@ -49,6 +55,7 @@ def test( str ):
 
 # define SQL tokens
 selectStmt = Forward()
+condition = Forward()
 selectToken = Keyword("select", caseless=True)
 fromToken   = Keyword("from", caseless=True)
 astoken  = Keyword("AS", caseless=True)
@@ -95,7 +102,10 @@ selectStmt      << ( selectToken +
                    tableNameList.setResultsName( "tables" ) + 
                    Optional( ZeroOrMore( CaselessLiteral("where") + whereExpression ), "" ).setResultsName("where") )
 
+condition << ( ZeroOrMore (columnName + binop + columnName) )
+
 simpleSQL = selectStmt
+conditionstmt = condition
 
 # define Oracle comment format, and ignore them
 oracleSqlComment = "--" + restOfLine
