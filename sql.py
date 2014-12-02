@@ -43,12 +43,27 @@ def test( str ):
             wherevals = ' '.join(wherevals)
             wherevals = wherevals.replace("where","")
         projectvals = tokens.columns 
-        projectvals = projectvals[0] 
+        projectvals = projectvals[0]
         print "PROJECT", projectvals , "(" , "SELECT" , wherevals , "(" , tablevals , ")" , ")"
+        relalg = "PROJECT", projectvals , "(" , "SELECT" , wherevals , "(" , tablevals , ")" , ")"
+        relalg = flatten(relalg)
+        relalg = ' '.join( relalg)
+        print relalg
         cross = conditionstmt.searchString( wherevals )
         cross = cross.asList()
         cross = [var for var in cross if var]
         print cross
+        node1 = "PROJECT", projectvals
+        node1 = flatten(node1)
+        node1 = ' '.join(node1)
+        node2 = "SELECT" , wherevals
+        node2 = flatten(node2)
+        node2 = ' '.join(node2)
+        node3 = tablevals
+        node3 = flatten(node3)
+        node3 = ' '.join(node3)
+        print "node1[ label = " , '"' , node1 , '"' , "]" "node2[ label =" , '"' , node2 , '"' , "]" "node3[label = " , '"' , node3 , '"' "]"
+        print "node1->node2" , "node2->node3"
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
@@ -58,6 +73,8 @@ def test( str ):
 # define SQL tokens
 selectStmt = Forward()
 condition = Forward()
+treegram = Forward()
+comps = Forward()
 selectToken = Keyword("select", caseless=True)
 fromToken   = Keyword("from", caseless=True)
 astoken  = Keyword("AS", caseless=True)
@@ -108,6 +125,8 @@ condition << ( ZeroOrMore (columnName + binop + columnName) )
 
 simpleSQL = selectStmt
 conditionstmt = condition
+
+
 
 # define Oracle comment format, and ignore them
 oracleSqlComment = "--" + restOfLine
