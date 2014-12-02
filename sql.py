@@ -25,8 +25,14 @@ def test( str ):
         wherevals = tokens.where.asList()
         tablevals = tokens.tables.asList()
         tablevalsloop = tokens.tables.asList()
+        node4 = []
+        node5 = []
         print tablevals
         aliasloop = list()
+        if 'AS' not in tablevals:
+            node3 = tablevals[0]
+            if len(tablevals)>1:
+                node4 = tablevals[1]
         if len(tablevals)>1:
             while 'AS' in tablevalsloop:
                 pos = tablevalsloop.index('AS')
@@ -34,10 +40,14 @@ def test( str ):
                 tablevalsloop = tablevalsloop[pos+1:]
             print aliasloop
             if 'AS' in tablevals:
+                node3 = aliasloop[0]
+                if len(aliasloop)>1:
+                    node4 = aliasloop[1]
                 tablevals = aliasloop
                 if len(aliasloop)>2:
-                    tablevals = aliasloop[0] , aliasloop[1] , "(" + aliasloop[2] + ")" 
-        tablevals = '*'.join(tablevals)
+                    tablevals = aliasloop[0] , aliasloop[1] , "(" + aliasloop[2] + ")"
+                    node5 = aliasloop[2]
+        tablevals = 'x'.join(tablevals)
         if len(wherevals)>1:
             wherevals = flatten(wherevals)
             wherevals = ' '.join(wherevals)
@@ -59,11 +69,22 @@ def test( str ):
         node2 = "SELECT" , wherevals
         node2 = flatten(node2)
         node2 = ' '.join(node2)
-        node3 = tablevals
-        node3 = flatten(node3)
-        node3 = ' '.join(node3)
-        print "node1[ label = " , '"' , node1 , '"' , "]" "node2[ label =" , '"' , node2 , '"' , "]" "node3[label = " , '"' , node3 , '"' "]"
-        print "node1->node2" , "node2->node3"
+        cross = 'x'
+        if len(node5)==0:
+            print "node1[ label = " , '"' , node1 , '"' , "]" "node2[ label =" , '"' , node2 , '"' , "]" "node3[label = " , '"' , node3 , '"' "]" , "cross[ label =" , '"' , "&#215;" , '"' , "]"
+        if len(node5)>0:
+           print "node1[ label = " , '"' , node1 , '"' , "]" "node2[ label =" , '"' , node2 , '"' , "]" "node3[label = " , '"' , node3 , '"' "]" , "cross2[ label =" , '"' , "&#215;" , '"' , "]" , "cross1[ label =" , '"' , "&#215;" , '"' , "]"
+           print "node1->node2" , "node2->cross2"  , "cross2->node5" , "cross2->cross1" , "cross1->node3" , "cross1->node4"
+        if len(node4)>0:
+            print "node4[ label = " , '"' , node4 , '"' , "]"
+        if len(node5)>0:
+            print "node5[ label = " , '"' , node5 , '"' , "]"   
+        if len(node5)==0:
+            print "node1->node2" , "node2->cross"  , "cross->node3"
+        if len(node4)>0 and len(node5)==0:
+            print "cross->node4"
+
+        
     except ParseException, err:
         print " "*err.loc + "^\n" + err.msg
         print err
